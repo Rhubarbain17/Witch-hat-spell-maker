@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bib7g15e08c4r"]
 
-[ext_resource type="Script" uid="uid://brab8s8la7ja4" path="res://scripts/Canvas.cs" id="1_elqb8"]
+[ext_resource type="Script" uid="uid://brab8s8la7ja4" path="res://scripts/Drawing/Canvas.cs" id="1_elqb8"]
 
 [node name="Main" type="Control" unique_id=1324571663]
 clip_contents = true

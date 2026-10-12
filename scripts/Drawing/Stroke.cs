@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
+// Class needed hold details for each stroke
 public partial class Stroke
 {
 	public List<Vector2> Points = new();

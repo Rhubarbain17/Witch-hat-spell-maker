@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
+
 public partial class Canvas : Control
 {
 	private readonly List<Stroke> _strokes = new();
@@ -9,6 +10,7 @@ public partial class Canvas : Control
 	[Export] public Color BrushColor = Colors.Black;
 	[Export] public float BrushWidth = 4f;
 
+	// Handles mouse input
 	public override void _GuiInput(InputEvent @event)
 	{
 		if (@event is InputEventMouseButton mb && mb.ButtonIndex == MouseButton.Left)
@@ -24,8 +26,16 @@ public partial class Canvas : Control
 		{
 			Undo();
 		}
+		//else if (@event is InputEventKey dk && dk.Pressed && dk.Keycode == Key.D && _strokes.Count > 0)
+		//{
+			//var s = _strokes[^1];
+			//var norm = Preprocess.Normalize(s.Points);
+			//GD.Print($"raw={s.Points.Count} normalized={norm.Count} closed={Preprocess.IsClosed(s.Points)}");
+		//}
+	
 	}
 
+	// Start of the stroke
 	private void BeginStroke(Vector2 pos)
 	{
 		var line = new Line2D
@@ -45,6 +55,7 @@ public partial class Canvas : Control
 		AddPoint(pos, 1f);
 	}
 
+	// Adds a point to the line
 	private void AddPoint(Vector2 pos, float pressure) 
 	{
 		if (_current.Points.Count > 0 &&  _current.Points[^1].DistanceTo(pos) < 1f) return;
@@ -54,8 +65,10 @@ public partial class Canvas : Control
 		_current.Line.AddPoint(pos);
 	}
 
+	// End of the stroke
 	private void EndStroke() { _current = null; }
 
+	// Undo and clear
 	public void Undo()
 	{
 		if (_strokes.Count == 0) return;
