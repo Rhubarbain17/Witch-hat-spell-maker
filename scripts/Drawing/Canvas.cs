@@ -26,13 +26,6 @@ public partial class Canvas : Control
 		{
 			Undo();
 		}
-		//else if (@event is InputEventKey dk && dk.Pressed && dk.Keycode == Key.D && _strokes.Count > 0)
-		//{
-			//var s = _strokes[^1];
-			//var norm = Preprocess.Normalize(s.Points);
-			//GD.Print($"raw={s.Points.Count} normalized={norm.Count} closed={Preprocess.IsClosed(s.Points)}");
-		//}
-	
 	}
 
 	// Start of the stroke
