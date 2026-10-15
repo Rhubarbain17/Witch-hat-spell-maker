@@ -6,6 +6,7 @@ public partial class Canvas : Control
 {
 	private readonly List<Stroke> _strokes = new();
 	private Stroke _current; 
+	private List<Glyph> _debugGlyphs = new();
 
 	[Export] public Color BrushColor = Colors.Black;
 	[Export] public float BrushWidth = 4f;
@@ -26,6 +27,20 @@ public partial class Canvas : Control
 		{
 			Undo();
 		}
+		else if (@event is InputEventKey gk && gk.Pressed && gk.Keycode == Key.G)
+		{
+			_debugGlyphs = Grouper.Build(_strokes);
+			foreach (var g in _debugGlyphs) GD.Print(g);
+
+			foreach (var a in _debugGlyphs)
+			foreach (var b in _debugGlyphs)
+		{
+			if (a == b) continue;
+			if (Spatial.Inside(a, b))         GD.Print($"{b} is INSIDE {a}");
+			if (Spatial.EndTouchesCircle(a, b)) GD.Print($"{b} touches the edge of {a}");
+		}
+		QueueRedraw();
+	}
 	}
 
 	// Start of the stroke
