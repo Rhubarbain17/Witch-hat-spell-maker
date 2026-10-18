@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public partial class Canvas : Control
@@ -10,6 +11,8 @@ public partial class Canvas : Control
 
 	[Export] public Color BrushColor = Colors.Black;
 	[Export] public float BrushWidth = 4f;
+	[Export] public string RecordName = "star";
+	private TemplateLibrary _library = new();
 
 	// Handles mouse input
 	public override void _GuiInput(InputEvent @event)
@@ -27,20 +30,31 @@ public partial class Canvas : Control
 		{
 			Undo();
 		}
-		else if (@event is InputEventKey gk && gk.Pressed && gk.Keycode == Key.G)
+		else if (@event is InputEventKey tk && tk.Pressed && tk.Keycode == Key.T && _strokes.Count > 0)
 		{
-			_debugGlyphs = Grouper.Build(_strokes);
-			foreach (var g in _debugGlyphs) GD.Print(g);
-
-			foreach (var a in _debugGlyphs)
-			foreach (var b in _debugGlyphs)
-		{
-			if (a == b) continue;
-			if (Spatial.Inside(a, b))         GD.Print($"{b} is INSIDE {a}");
-			if (Spatial.EndTouchesCircle(a, b)) GD.Print($"{b} touches the edge of {a}");
+		// Records EVERYTHING on the canvas as one template, so draw one symbol at a time
+		var strokes = _strokes.Select(s => new List<Vector2>(s.Points)).ToList();
+		_library.Add(RecordName, strokes);
+		_library.Save();
+		GD.Print($"Recorded '{RecordName}' ({strokes.Count} stroke(s)). Total: {_library.Templates.Count}");
 		}
+		else if (@event is InputEventKey ck && ck.Pressed && ck.Keycode == Key.C)
+		{
+		Clear();
+		_debugGlyphs.Clear();
 		QueueRedraw();
-	}
+		}
+		else if (@event is InputEventKey mk && mk.Pressed && mk.Keycode == Key.M && _strokes.Count > 0)
+		{		
+		var all = GlyphMatcher.Recognise(_strokes.Select(s => s.Points).ToList(), _library.Templates);
+		GD.Print($"whole canvas: best={all.Name} dist={all.Distance:F3} runnerUp={all.RunnerUp:F3}");
+
+		_debugGlyphs = GlyphLabeller.Apply(Grouper.Build(_strokes), _library);
+		foreach (var g in _debugGlyphs)
+			GD.Print($"{g}  name={g.Name ?? "-"}  dist={g.MatchDistance:F3}");
+		QueueRedraw();
+		}
+		
 	}
 
 	// Start of the stroke
